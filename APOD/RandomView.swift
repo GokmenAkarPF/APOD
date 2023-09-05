@@ -6,55 +6,17 @@
 //
 
 import SwiftUI
-
-class RandomViewModel: ObservableObject {
-
-    @Published var apod: APOD? = nil
-
-    @MainActor func getImage() async {
-        do {
-            let (data, _) = try await URLSession.shared.data(from: URL(string: "https://api.nasa.gov/planetary/apod?api_key=WBd6KIwrJohInTFEi1XSZA7ERws6opS3KLm2XhSH&count=1")!)
-            apod = try JSONDecoder().decode([APOD].self, from: data).first
-        } catch {
-            print(error.localizedDescription)
-        }
-    }
-
-    func like() {
-        self.apod!.isLiked = !self.apod!.isLiked
-
-        do {
-            if let modelsData = UserDefaults.standard.data(forKey: "likes") {
-                var modelss = try JSONDecoder().decode([APOD].self, from: modelsData)
-                if modelss.contains(where: { self.apod!.date == $0.date }) {
-                    modelss.removeAll { self.apod!.date == $0.date }
-                } else {
-                    modelss.append(apod!)
-                }
-                let modelData = try JSONEncoder().encode(modelss)
-                UserDefaults.standard.set(modelData, forKey: "likes")
-            } else {
-                let modelData = try JSONEncoder().encode([apod])
-                UserDefaults.standard.set(modelData, forKey: "likes")
-
-            }
-        } catch {
-            print(error.localizedDescription)
-        }
-    }
-}
-
 struct RandomView: View {
 
-    @StateObject private var viewModel: RandomViewModel = .init()
+    @EnvironmentObject var likeManager: LikeManager
 
     @State private var offset: CGFloat = .zero
 
     var body: some View {
         NavigationStack {
             VStack(spacing: .zero) {
-                if let apod = viewModel.apod {
-                    APODCard(apod: apod) { viewModel.like() }
+                if let apod = likeManager.randomApod {
+                    APODCard(apod: apod) { likeManager.like(apod: apod) }
                         .overlay {
                             if offset == .zero {
                                 EmptyView()
@@ -73,10 +35,10 @@ struct RandomView: View {
                                 .onEnded { value in
                                     withAnimation {
                                         if value.translation.width > 150 {
-                                            viewModel.like()
-                                            viewModel.apod = nil
+                                            likeManager.like(apod: apod)
+                                            likeManager.randomApod = nil
                                         } else if value.translation.width < -150 {
-                                            viewModel.apod = nil
+                                            likeManager.randomApod = nil
                                         }
                                         offset = .zero
                                     }
@@ -89,7 +51,7 @@ struct RandomView: View {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .task {
-                            await viewModel.getImage()
+                            await likeManager.getImage()
                         }
                 }
             }

@@ -22,7 +22,8 @@ struct TabbarView: View {
                     Image(systemName: "infinity")
                 }
                 .tag(1)
-            Text("w")
+            
+            FavoritesView()
                 .tabItem {
                     Image(systemName: "heart")
                 }

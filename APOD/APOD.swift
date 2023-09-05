@@ -8,7 +8,6 @@
 import Foundation
 
 struct APOD: Codable {
-    var id = UUID().uuidString
     var date, explanation: String
     var hdurl: String?
     var mediaType: String?

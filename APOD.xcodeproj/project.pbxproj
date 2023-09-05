@@ -16,6 +16,7 @@
 		B310DF722AA767340044DA18 /* TabbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B310DF712AA767340044DA18 /* TabbarView.swift */; };
 		B310DF742AA767AE0044DA18 /* RandomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B310DF732AA767AE0044DA18 /* RandomView.swift */; };
 		B310DF762AA7CE660044DA18 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B310DF752AA7CE660044DA18 /* FavoritesView.swift */; };
+		B310DF782AA7DB520044DA18 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B310DF772AA7DB520044DA18 /* NetworkManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		B310DF712AA767340044DA18 /* TabbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabbarView.swift; sourceTree = "<group>"; };
 		B310DF732AA767AE0044DA18 /* RandomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomView.swift; sourceTree = "<group>"; };
 		B310DF752AA7CE660044DA18 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
+		B310DF772AA7DB520044DA18 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				B310DF5F2AA75E0D0044DA18 /* HomeView.swift */,
 				B310DF732AA767AE0044DA18 /* RandomView.swift */,
 				B310DF752AA7CE660044DA18 /* FavoritesView.swift */,
+				B310DF772AA7DB520044DA18 /* NetworkManager.swift */,
 				B310DF6C2AA75E8D0044DA18 /* APOD.swift */,
 				B310DF612AA75E0E0044DA18 /* Assets.xcassets */,
 				B310DF632AA75E0E0044DA18 /* APOD.entitlements */,
@@ -162,6 +165,7 @@
 				B310DF602AA75E0D0044DA18 /* HomeView.swift in Sources */,
 				B310DF742AA767AE0044DA18 /* RandomView.swift in Sources */,
 				B310DF762AA7CE660044DA18 /* FavoritesView.swift in Sources */,
+				B310DF782AA7DB520044DA18 /* NetworkManager.swift in Sources */,
 				B310DF6D2AA75E8D0044DA18 /* APOD.swift in Sources */,
 				B310DF722AA767340044DA18 /* TabbarView.swift in Sources */,
 				B310DF5E2AA75E0C0044DA18 /* APODApp.swift in Sources */,

@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct APODApp: App {
+
+    @StateObject private var likeManager = LikeManager()
     var body: some Scene {
         WindowGroup {
             TabbarView()
+                .environmentObject(likeManager)
         }
     }
 }
