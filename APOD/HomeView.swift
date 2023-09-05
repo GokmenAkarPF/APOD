@@ -27,8 +27,17 @@ class HomeViewModel: ObservableObject {
     }
 
     func reset() {
+
+        models = []
+        date1 = Date()
+        date2 = Date()
         upperDate = Date()
         lowerDate = Calendar.current.date(byAdding: .day, value: -10, to: Date())!
+        isFilterActive = false
+
+        Task {
+            await getPhotos()
+        }
     }
 
     @MainActor func getPhotos() async {
@@ -38,7 +47,6 @@ class HomeViewModel: ObservableObject {
         do {
             let (data, _) = try await URLSession.shared.data(from: URL(string: "https://api.nasa.gov/planetary/apod?api_key=WBd6KIwrJohInTFEi1XSZA7ERws6opS3KLm2XhSH&start_date=\(lowerBoundString)&end_date=\(upperBoundString)")!)
             models += try JSONDecoder().decode([APOD].self, from: data)
-
             upperDate = lowerDate
             lowerDate = Calendar.current.date(byAdding: .day, value: -19, to: lowerDate)!
         } catch {
@@ -50,6 +58,9 @@ class HomeViewModel: ObservableObject {
         $date1
             .dropFirst()
             .combineLatest($date2)
+            .filter { _ in
+                !self.isFilterActive
+            }
             .sink { val in
                 self.isFilterActive = true 
                 self.models = []
@@ -58,8 +69,6 @@ class HomeViewModel: ObservableObject {
                 Task {
                     await self.getPhotos()
                 }
-
-
             }
             .store(in: &cancellable)
     }
@@ -108,8 +117,7 @@ struct HomeView: View {
                     ToolbarItem(placement: .navigationBarLeading) {
                         if viewModel.isFilterActive {
                         Button("Remove Filters") {
-                            viewModel.isFilterActive = false
-
+                            viewModel.reset()
                         }
                     }
                 }
