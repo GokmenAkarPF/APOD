@@ -7,20 +7,28 @@
 
 import SwiftUI
 import SDWebImageSwiftUI
+import Combine
 
 class HomeViewModel: ObservableObject {
     @Published var models: [APOD] = []
 
     var upperDate: Date
     var lowerDate: Date
-    var currentDate = Date()
     @Published var date1: Date = Date()
     @Published var date2: Date = Date()
+    @Published var isFilterActive: Bool = false
 
+    var cancellable = Set<AnyCancellable>()
 
     init() {
-        upperDate = currentDate
-        lowerDate = Calendar.current.date(byAdding: .day, value: -10, to: currentDate)!
+        upperDate = Date()
+        lowerDate = Calendar.current.date(byAdding: .day, value: -10, to: Date())!
+        bindDates()
+    }
+
+    func reset() {
+        upperDate = Date()
+        lowerDate = Calendar.current.date(byAdding: .day, value: -10, to: Date())!
     }
 
     @MainActor func getPhotos() async {
@@ -36,6 +44,24 @@ class HomeViewModel: ObservableObject {
         } catch {
             print(error.localizedDescription)
         }
+    }
+
+    func bindDates() {
+        $date1
+            .dropFirst()
+            .combineLatest($date2)
+            .sink { val in
+                self.isFilterActive = true 
+                self.models = []
+                self.lowerDate = val.0
+                self.upperDate = val.1
+                Task {
+                    await self.getPhotos()
+                }
+
+
+            }
+            .store(in: &cancellable)
     }
 }
 
@@ -53,7 +79,7 @@ struct HomeView: View {
                     ForEach(viewModel.models, id: \.id) { apod in
                             APODCard(apod: apod)
                                 .onAppear {
-                                    if apod.id == viewModel.models.last!.id {
+                                    if apod.id == viewModel.models.last!.id, !viewModel.isFilterActive {
                                         Task {
                                             await viewModel.getPhotos()
                                         }
@@ -65,9 +91,11 @@ struct HomeView: View {
                                 }
                     }
 
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .frame(height: 120)
+                    if !viewModel.isFilterActive {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .frame(height: 120)
+                    }
                 }
 
                 NavigationLink("",
@@ -76,6 +104,16 @@ struct HomeView: View {
             }
             .navigationTitle("Home")
             .toolbar {
+
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        if viewModel.isFilterActive {
+                        Button("Remove Filters") {
+                            viewModel.isFilterActive = false
+
+                        }
+                    }
+                }
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
                         DatePicker("", selection: $viewModel.date1, in: ...Date(), displayedComponents: .date)
