@@ -41,6 +41,7 @@ struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel = .init()
 
     @State private var showDetail: Bool = false
+    @State private var url: URL? = nil
 
     var body: some View {
         NavigationStack {
@@ -56,6 +57,7 @@ struct HomeView: View {
                                     }
                                 }
                                 .onTapGesture {
+                                    url = URL(string: apod.hdurl!)!
                                     showDetail = true
                                 }
                     }
@@ -65,7 +67,9 @@ struct HomeView: View {
                         .frame(height: 120)
                 }
 
-                NavigationLink("", destination: Text("s"), isActive: $showDetail)
+                NavigationLink("",
+                               destination: HighResolutionImage(url: url),
+                               isActive: $showDetail)
             }
             .task {
                 await viewModel.getPhotos()
@@ -75,9 +79,12 @@ struct HomeView: View {
 }
 
 struct HighResolutionImage: View {
-    let url: URL
+    let url: URL?
     var body: some View {
-        Text("s")
+        WebImage(url: url)
+            .resizable()
+            .scaledToFit()
+
     }
 }
 
