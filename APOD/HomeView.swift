@@ -75,7 +75,6 @@ class HomeViewModel: ObservableObject {
 }
 
 struct HomeView: View {
-
     @StateObject private var viewModel: HomeViewModel = .init()
 
     @State private var showDetail: Bool = false
@@ -113,7 +112,6 @@ struct HomeView: View {
             }
             .navigationTitle("Home")
             .toolbar {
-
                     ToolbarItem(placement: .navigationBarLeading) {
                         if viewModel.isFilterActive {
                         Button("Remove Filters") {
@@ -163,15 +161,24 @@ struct APODCard: View {
         VStack(spacing: .zero) {
             // TODO: Image
             WebImage(url: URL(string: apod.url))
-
                 .onSuccess { pImage, data, _ in
 
                 }
                 .resizable()
                 .indicator(.progress)
                 .scaledToFill()
-                .frame(height: 230)
                 .clipped()
+                .overlay(alignment: .topTrailing) {
+                    Button {
+
+                    } label: {
+                        Image(systemName: "heart")
+                            .resizable()
+                            .frame(width: 28, height: 24)
+                            .foregroundColor(.red)
+                            .padding([.top, .trailing])
+                    }
+                }
 
             VStack(alignment: .leading) {
                 Text(apod.title)
