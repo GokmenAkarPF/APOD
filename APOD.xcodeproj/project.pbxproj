@@ -8,21 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		B310DF5E2AA75E0C0044DA18 /* APODApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B310DF5D2AA75E0C0044DA18 /* APODApp.swift */; };
-		B310DF602AA75E0D0044DA18 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B310DF5F2AA75E0D0044DA18 /* ContentView.swift */; };
+		B310DF602AA75E0D0044DA18 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B310DF5F2AA75E0D0044DA18 /* HomeView.swift */; };
 		B310DF622AA75E0E0044DA18 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B310DF612AA75E0E0044DA18 /* Assets.xcassets */; };
 		B310DF662AA75E0E0044DA18 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B310DF652AA75E0E0044DA18 /* Preview Assets.xcassets */; };
 		B310DF6D2AA75E8D0044DA18 /* APOD.swift in Sources */ = {isa = PBXBuildFile; fileRef = B310DF6C2AA75E8D0044DA18 /* APOD.swift */; };
 		B310DF702AA761310044DA18 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B310DF6F2AA761310044DA18 /* SDWebImageSwiftUI */; };
+		B310DF722AA767340044DA18 /* TabbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B310DF712AA767340044DA18 /* TabbarView.swift */; };
+		B310DF742AA767AE0044DA18 /* RandomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B310DF732AA767AE0044DA18 /* RandomView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B310DF5A2AA75E0C0044DA18 /* APOD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = APOD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B310DF5D2AA75E0C0044DA18 /* APODApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APODApp.swift; sourceTree = "<group>"; };
-		B310DF5F2AA75E0D0044DA18 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B310DF5F2AA75E0D0044DA18 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B310DF612AA75E0E0044DA18 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B310DF632AA75E0E0044DA18 /* APOD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = APOD.entitlements; sourceTree = "<group>"; };
 		B310DF652AA75E0E0044DA18 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B310DF6C2AA75E8D0044DA18 /* APOD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APOD.swift; sourceTree = "<group>"; };
+		B310DF712AA767340044DA18 /* TabbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabbarView.swift; sourceTree = "<group>"; };
+		B310DF732AA767AE0044DA18 /* RandomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,11 +61,13 @@
 			isa = PBXGroup;
 			children = (
 				B310DF5D2AA75E0C0044DA18 /* APODApp.swift */,
-				B310DF5F2AA75E0D0044DA18 /* ContentView.swift */,
+				B310DF5F2AA75E0D0044DA18 /* HomeView.swift */,
+				B310DF732AA767AE0044DA18 /* RandomView.swift */,
 				B310DF6C2AA75E8D0044DA18 /* APOD.swift */,
 				B310DF612AA75E0E0044DA18 /* Assets.xcassets */,
 				B310DF632AA75E0E0044DA18 /* APOD.entitlements */,
 				B310DF642AA75E0E0044DA18 /* Preview Content */,
+				B310DF712AA767340044DA18 /* TabbarView.swift */,
 			);
 			path = APOD;
 			sourceTree = "<group>";
@@ -150,8 +156,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B310DF602AA75E0D0044DA18 /* ContentView.swift in Sources */,
+				B310DF602AA75E0D0044DA18 /* HomeView.swift in Sources */,
+				B310DF742AA767AE0044DA18 /* RandomView.swift in Sources */,
 				B310DF6D2AA75E8D0044DA18 /* APOD.swift in Sources */,
+				B310DF722AA767340044DA18 /* TabbarView.swift in Sources */,
 				B310DF5E2AA75E0C0044DA18 /* APODApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

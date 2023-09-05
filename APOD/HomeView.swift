@@ -21,7 +21,6 @@ class HomeViewModel: ObservableObject {
     }
 
     @MainActor func getPhotos() async {
-
         let upperBoundString = upperDate.formatted(.iso8601).description.split(separator: "T").first!.description
         let lowerBoundString = lowerDate.formatted(.iso8601).description.split(separator: "T").first!.description
 
@@ -41,25 +40,32 @@ struct HomeView: View {
 
     @StateObject private var viewModel: HomeViewModel = .init()
 
+    @State private var showDetail: Bool = false
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.models, id: \.id) { apod in
-                        APODCard(apod: apod)
-                            .onAppear {
-                                if apod.id == viewModel.models.last!.id {
-                                    Task {
-                                        await viewModel.getPhotos()
+                            APODCard(apod: apod)
+                                .onAppear {
+                                    if apod.id == viewModel.models.last!.id {
+                                        Task {
+                                            await viewModel.getPhotos()
+                                        }
                                     }
                                 }
-                            }
+                                .onTapGesture {
+                                    showDetail = true
+                                }
                     }
 
                     ProgressView()
                         .progressViewStyle(.circular)
                         .frame(height: 120)
                 }
+
+                NavigationLink("", destination: Text("s"), isActive: $showDetail)
             }
             .task {
                 await viewModel.getPhotos()
@@ -68,6 +74,14 @@ struct HomeView: View {
     }
 }
 
+struct HighResolutionImage: View {
+    let url: URL
+    var body: some View {
+        Text("s")
+    }
+}
+
+// MARK: - Card
 struct APODCard: View {
     let apod: APOD
 
