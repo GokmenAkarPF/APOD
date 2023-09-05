@@ -15,44 +15,48 @@ struct RandomView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: .zero) {
-                if let apod = likeManager.randomApod {
-                    APODCard(apod: apod) { likeManager.like(apod: apod) }
-                        .overlay {
-                            if offset == .zero {
-                                EmptyView()
-                            } else {
-                                choiceView(forRight: offset > .zero)
-                            }
-                        }
-                        .offset(x: offset)
-                        .rotationEffect(.degrees(Double(offset / 40)))
-                        .frame(height: 320)
-                        .gesture(
-                            DragGesture()
-                                .onChanged { value in
-                                    offset = value.translation.width
-                                }
-                                .onEnded { value in
-                                    withAnimation {
-                                        if value.translation.width > 150 {
-                                            likeManager.like(apod: apod)
-                                            likeManager.randomApod = nil
-                                        } else if value.translation.width < -150 {
-                                            likeManager.randomApod = nil
-                                        }
-                                        offset = .zero
-                                    }
-                                }
-                        )
-                        .animation(.easeInOut, value: offset)
-                        .padding(16)
-
+                if !likeManager.isConnected {
+                    Text("No internet connection...")
                 } else {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .task {
-                            await likeManager.getImage()
-                        }
+                    if let apod = likeManager.randomApod {
+                        APODCard(apod: apod) { likeManager.like(apod: apod) }
+                            .overlay {
+                                if offset == .zero {
+                                    EmptyView()
+                                } else {
+                                    choiceView(forRight: offset > .zero)
+                                }
+                            }
+                            .offset(x: offset)
+                            .rotationEffect(.degrees(Double(offset / 40)))
+                            .frame(height: 320)
+                            .gesture(
+                                DragGesture()
+                                    .onChanged { value in
+                                        offset = value.translation.width
+                                    }
+                                    .onEnded { value in
+                                        withAnimation {
+                                            if value.translation.width > 150 {
+                                                likeManager.like(apod: apod)
+                                                likeManager.randomApod = nil
+                                            } else if value.translation.width < -150 {
+                                                likeManager.randomApod = nil
+                                            }
+                                            offset = .zero
+                                        }
+                                    }
+                            )
+                            .animation(.easeInOut, value: offset)
+                            .padding(16)
+
+                    } else {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .task {
+                                await likeManager.getImage()
+                            }
+                    }
                 }
             }
         }

@@ -104,6 +104,7 @@ struct APODCard: View {
                 .resizable()
                 .indicator(.progress)
                 .scaledToFill()
+                .frame(height: 220)
                 .clipped()
                 .overlay(alignment: .topTrailing) {
                     Button {

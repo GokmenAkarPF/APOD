@@ -15,6 +15,7 @@ class LikeManager: ObservableObject {
     @Published var date1: Date = Date()
     @Published var date2: Date = Date()
     @Published var isFilterActive: Bool = false
+    @Published var isConnected: Bool = false
 
     @Published var randomApod: APOD? = nil
     @Published var models: [APOD] = []
@@ -27,6 +28,7 @@ class LikeManager: ObservableObject {
         lowerDate = Calendar.current.date(byAdding: .day, value: -10, to: Date())!
         bindDates()
         bindFavorites()
+        bindNetworkConnection()
         getModels()
     }
 
@@ -105,6 +107,28 @@ class LikeManager: ObservableObject {
             .store(in: &cancellable)
     }
 
+    private func bindNetworkConnection() {
+        networkManager.$isConnectedChanged
+            .sink { isConnected in
+                self.isConnected = isConnected
+                if !isConnected {
+                    if let cachedData = UserDefaults.standard.data(forKey: "cachedData") {
+                        do {
+                            let cachedModels = try JSONDecoder().decode([APOD].self, from: cachedData)
+                            self.models = cachedModels.map { apod in
+                                var _apod = apod
+                                _apod.isLiked = self.likedModels.contains { $0.date == apod.date }
+                                return _apod
+                            }
+
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                    }
+                }
+            }.store(in: &cancellable)
+    }
+
     func unliked(apod: APOD) {
         likedModels.removeAll { apod.date == $0.date }
         let modelData = try! JSONEncoder().encode(likedModels)
@@ -130,6 +154,9 @@ class LikeManager: ObservableObject {
             }
 
             models += modelss
+
+            let cacheData = try JSONEncoder().encode(models)
+            UserDefaults.standard.set(cacheData, forKey: "cachedData")
 
             upperDate = lowerDate
             lowerDate = Calendar.current.date(byAdding: .day, value: -19, to: lowerDate)!
@@ -165,15 +192,6 @@ class LikeManager: ObservableObject {
             }
             .store(in: &cancellable)
     }
-
-    private func bindNetworkConnection() {
-        networkManager.$isConnectedChanged
-            .filter { $0 }
-            .first()
-            .sink { [weak self] _ in
-                
-            }.store(in: &cancellable)
-    }
 }
 
 struct FavoritesView: View {
@@ -182,19 +200,22 @@ struct FavoritesView: View {
 
     var body: some View {
         NavigationStack {
-            if likeManager.likedModels.isEmpty {
-                Text("No favorites... 👽")
-            } else {
-                ScrollView {
-                    LazyVStack {
-                        ForEach(likeManager.likedModels, id: \.date) { apod in
-                            APODCard(apod: apod) {
-                                likeManager.unliked(apod: apod)
+            VStack {
+                if likeManager.likedModels.isEmpty {
+                    Text("No favorites... 👽")
+                } else {
+                    ScrollView {
+                        LazyVStack {
+                            ForEach(likeManager.likedModels, id: \.date) { apod in
+                                APODCard(apod: apod) {
+                                    likeManager.unliked(apod: apod)
+                                }
                             }
                         }
                     }
                 }
             }
+            .navigationTitle("Favorites")
         }
     }
 }
