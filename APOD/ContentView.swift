@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 class HomeViewModel: ObservableObject {
-    @Published var models: [APOD] = [.init(date: "11-03-2023", explanation: "Test test test", hdurl: "url", mediaType: nil, serviceVersion: nil, title: "Title", url: "url", copyright: nil)]
+    @Published var models: [APOD] = []
 
     func getPhotos() async {
-
+        do {
+            let (data, _) = try await URLSession.shared.data(from: URL(string: "https://api.nasa.gov/planetary/apod?api_key=WBd6KIwrJohInTFEi1XSZA7ERws6opS3KLm2XhSH&count=5")!)
+            models += try JSONDecoder().decode([APOD].self, from: data)
+        } catch {
+            print(error.localizedDescription)
+        }
     }
 }
 
@@ -28,6 +34,9 @@ struct HomeView: View {
                     }
                 }
             }
+            .task {
+                await viewModel.getPhotos()
+            }
         }
     }
 }
@@ -38,14 +47,28 @@ struct APODCard: View {
     var body: some View {
         VStack {
             // TODO: Image
-            RoundedRectangle(cornerRadius: 12)
-                .foregroundColor(.red)
-                .frame(height: 230)
+            WebImage(url: URL(string: apod.url))
+                .onSuccess { pImage, data, _ in
 
-            Text(apod.title)
-            Text(apod.explanation)
+                }
+                .resizable()
+                .scaledToFill()
+                .frame(height: 230)
+                .clipped()
+
+            VStack(alignment: .leading) {
+                Text(apod.title)
+                    .font(.headline)
+
+                Text(apod.explanation)
+                    .font(.callout)
+                    .lineLimit(3)
+            }
+            .foregroundColor(Color.white)
+            .background(Color.black)
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
+
     }
 }
 
