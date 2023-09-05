@@ -54,9 +54,7 @@ struct RandomView: View {
         NavigationStack {
             VStack(spacing: .zero) {
                 if let apod = viewModel.apod {
-                    APODCard(apod: apod) {
-                        viewModel.like()
-                    }
+                    APODCard(apod: apod) { viewModel.like() }
                         .overlay {
                             if offset == .zero {
                                 EmptyView()
@@ -75,6 +73,7 @@ struct RandomView: View {
                                 .onEnded { value in
                                     withAnimation {
                                         if value.translation.width > 150 {
+                                            viewModel.like()
                                             viewModel.apod = nil
                                         } else if value.translation.width < -150 {
                                             viewModel.apod = nil
