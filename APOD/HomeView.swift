@@ -71,6 +71,7 @@ struct HomeView: View {
                                destination: HighResolutionImage(url: url),
                                isActive: $showDetail)
             }
+            .navigationTitle("Home")
             .task {
                 await viewModel.getPhotos()
             }
@@ -83,17 +84,17 @@ struct HighResolutionImage: View {
 
     @State private var scale: CGFloat = 1.0
     var body: some View {
-        WebImage(url: url)
-            .resizable()
-            .scaledToFit()
-            .scaleEffect(scale)
-            .gesture(
-                MagnificationGesture().onChanged { scale in
-                    self.scale = min(max(scale.magnitude, 0.8), 3.0)
+            WebImage(url: url)
+                .resizable()
+                .indicator(.progress)
+                .scaledToFit()
+                .scaleEffect(scale)
+                .frame(height: 230)
+                .gesture(
+                    MagnificationGesture().onChanged { scale in
+                        self.scale = min(max(scale.magnitude, 0.8), 3.0)
                     }
-            )
-
-
+                )
     }
 }
 
@@ -105,11 +106,12 @@ struct APODCard: View {
         VStack(spacing: .zero) {
             // TODO: Image
             WebImage(url: URL(string: apod.url))
+
                 .onSuccess { pImage, data, _ in
 
                 }
                 .resizable()
-                .indicator(.activity(style: .large))
+                .indicator(.progress)
                 .scaledToFill()
                 .frame(height: 230)
                 .clipped()
