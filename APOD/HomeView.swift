@@ -14,6 +14,9 @@ class HomeViewModel: ObservableObject {
     var upperDate: Date
     var lowerDate: Date
     var currentDate = Date()
+    @Published var date1: Date = Date()
+    @Published var date2: Date = Date()
+
 
     init() {
         upperDate = currentDate
@@ -72,6 +75,14 @@ struct HomeView: View {
                                isActive: $showDetail)
             }
             .navigationTitle("Home")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    HStack {
+                        DatePicker("", selection: $viewModel.date1, in: ...Date(), displayedComponents: .date)
+                        DatePicker("", selection: $viewModel.date2, displayedComponents: .date)
+                    }
+                }
+            }
             .task {
                 await viewModel.getPhotos()
             }
