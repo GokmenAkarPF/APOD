@@ -7,20 +7,50 @@
 
 import SwiftUI
 
-struct ContentView: View {
+class HomeViewModel: ObservableObject {
+    @Published var models: [APOD] = [.init(date: "11-03-2023", explanation: "Test test test", hdurl: "url", mediaType: nil, serviceVersion: nil, title: "Title", url: "url", copyright: nil)]
+
+    func getPhotos() async {
+
+    }
+}
+
+struct HomeView: View {
+
+    @StateObject private var viewModel: HomeViewModel = .init()
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                LazyVStack(spacing: 16) {
+                    ForEach(viewModel.models, id: \.id) { apod in
+                        APODCard(apod: apod)
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct APODCard: View {
+    let apod: APOD
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            // TODO: Image
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundColor(.red)
+                .frame(height: 230)
+
+            Text(apod.title)
+            Text(apod.explanation)
         }
-        .padding()
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        HomeView()
     }
 }
