@@ -8,14 +8,15 @@
 import Foundation
 
 struct APOD: Codable {
-    let id = UUID().uuidString
-    let date, explanation: String
-    let hdurl: String?
-    let mediaType: String?
-    let serviceVersion: String?
-    let title: String
-    let url: String
-    let copyright: String?
+    var id = UUID().uuidString
+    var date, explanation: String
+    var hdurl: String?
+    var mediaType: String?
+    var serviceVersion: String?
+    var title: String
+    var url: String
+    var copyright: String?
+    var isLiked: Bool = false
 
     enum CodingKeys: String, CodingKey {
         case date, explanation, hdurl

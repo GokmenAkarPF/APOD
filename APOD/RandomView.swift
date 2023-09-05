@@ -19,6 +19,29 @@ class RandomViewModel: ObservableObject {
             print(error.localizedDescription)
         }
     }
+
+    func like() {
+        self.apod!.isLiked = !self.apod!.isLiked
+
+        do {
+            if let modelsData = UserDefaults.standard.data(forKey: "likes") {
+                var modelss = try JSONDecoder().decode([APOD].self, from: modelsData)
+                if modelss.contains(where: { self.apod!.date == $0.date }) {
+                    modelss.removeAll { self.apod!.date == $0.date }
+                } else {
+                    modelss.append(apod!)
+                }
+                let modelData = try JSONEncoder().encode(modelss)
+                UserDefaults.standard.set(modelData, forKey: "likes")
+            } else {
+                let modelData = try JSONEncoder().encode([apod])
+                UserDefaults.standard.set(modelData, forKey: "likes")
+
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
 }
 
 struct RandomView: View {
@@ -31,7 +54,9 @@ struct RandomView: View {
         NavigationStack {
             VStack(spacing: .zero) {
                 if let apod = viewModel.apod {
-                    APODCard(apod: apod)
+                    APODCard(apod: apod) {
+                        viewModel.like()
+                    }
                         .overlay {
                             if offset == .zero {
                                 EmptyView()
@@ -59,7 +84,7 @@ struct RandomView: View {
                                 }
                         )
                         .animation(.easeInOut, value: offset)
-                        .padding(12)
+                        .padding(16)
 
                 } else {
                     ProgressView()
@@ -69,19 +94,6 @@ struct RandomView: View {
                         }
                 }
             }
-        }
-    }
-
-    func like(apod: APOD) {
-        do {
-            if let modelsData = UserDefaults.standard.data(forKey: "likes") {
-                var modelss = try JSONDecoder().decode([APOD].self, from: modelsData)
-                modelss.append(apod)
-            } else {
-                let modelData = try JSONEncoder().encode(apod)
-            }
-        } catch {
-            print(error.localizedDescription)
         }
     }
 

@@ -46,7 +46,21 @@ class HomeViewModel: ObservableObject {
 
         do {
             let (data, _) = try await URLSession.shared.data(from: URL(string: "https://api.nasa.gov/planetary/apod?api_key=WBd6KIwrJohInTFEi1XSZA7ERws6opS3KLm2XhSH&start_date=\(lowerBoundString)&end_date=\(upperBoundString)")!)
-            models += try JSONDecoder().decode([APOD].self, from: data)
+            var modelss = try JSONDecoder().decode([APOD].self, from: data)
+
+            if let likedData = UserDefaults.standard.data(forKey: "likes") {
+                let likedModels = try JSONDecoder().decode([APOD].self, from: likedData)
+
+                modelss = modelss.map { apod in
+                    var _apod = apod
+                    _apod.isLiked = likedModels.contains { apod.date == $0.date }
+                    return _apod
+                }
+            }
+
+
+            models += modelss
+
             upperDate = lowerDate
             lowerDate = Calendar.current.date(byAdding: .day, value: -19, to: lowerDate)!
         } catch {
@@ -72,6 +86,31 @@ class HomeViewModel: ObservableObject {
             }
             .store(in: &cancellable)
     }
+
+    func like(apod: APOD) {
+        if let index = models.firstIndex(where: { $0.id == apod.id }) {
+            models[index].isLiked = !models[index].isLiked
+        }
+
+        do {
+            if let modelsData = UserDefaults.standard.data(forKey: "likes") {
+                var modelss = try JSONDecoder().decode([APOD].self, from: modelsData)
+                if modelss.contains(where: { apod.date == $0.date }) {
+                    modelss.removeAll { apod.date == $0.date }
+                } else {
+                    modelss.append(apod)
+                }
+                let modelData = try JSONEncoder().encode(modelss)
+                UserDefaults.standard.set(modelData, forKey: "likes")
+            } else {
+                let modelData = try JSONEncoder().encode([apod])
+                UserDefaults.standard.set(modelData, forKey: "likes")
+
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
 }
 
 struct HomeView: View {
@@ -85,18 +124,20 @@ struct HomeView: View {
             ScrollView {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.models, id: \.id) { apod in
-                            APODCard(apod: apod)
-                                .onAppear {
-                                    if apod.id == viewModel.models.last!.id, !viewModel.isFilterActive {
-                                        Task {
-                                            await viewModel.getPhotos()
-                                        }
-                                    }
+                        APODCard(apod: apod) {
+                            viewModel.like(apod: apod)
+                        }
+                        .onAppear {
+                            if apod.id == viewModel.models.last!.id, !viewModel.isFilterActive {
+                                Task {
+                                    await viewModel.getPhotos()
                                 }
-                                .onTapGesture {
-                                    url = URL(string: apod.hdurl!)!
-                                    showDetail = true
-                                }
+                            }
+                        }
+                        .onTapGesture {
+                            url = URL(string: apod.hdurl!)!
+                            showDetail = true
+                        }
                     }
 
                     if !viewModel.isFilterActive {
@@ -156,6 +197,7 @@ struct HighResolutionImage: View {
 // MARK: - Card
 struct APODCard: View {
     let apod: APOD
+    let completion: () -> ()
 
     var body: some View {
         VStack(spacing: .zero) {
@@ -170,9 +212,9 @@ struct APODCard: View {
                 .clipped()
                 .overlay(alignment: .topTrailing) {
                     Button {
-
+                        completion()
                     } label: {
-                        Image(systemName: "heart")
+                        Image(systemName: apod.isLiked ? "heart.fill" : "heart")
                             .resizable()
                             .frame(width: 28, height: 24)
                             .foregroundColor(.red)
@@ -199,6 +241,10 @@ struct APODCard: View {
         .padding(.horizontal, 12)
 
     }
+
+
+
+
 }
 
 struct ContentView_Previews: PreviewProvider {
