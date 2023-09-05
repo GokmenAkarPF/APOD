@@ -94,13 +94,12 @@ struct APODCard: View {
     let apod: APOD
     let completion: () -> ()
 
+    @State private var selectedModel: APOD?
+
     var body: some View {
         VStack(spacing: .zero) {
             // TODO: Image
             WebImage(url: URL(string: apod.url))
-                .onSuccess { pImage, data, _ in
-
-                }
                 .resizable()
                 .indicator(.progress)
                 .scaledToFill()
@@ -115,6 +114,11 @@ struct APODCard: View {
                             .frame(width: 28, height: 24)
                             .foregroundColor(.red)
                             .padding([.top, .trailing])
+                    }
+                }
+                .contextMenu {
+                    Button("Share") {
+                        selectedModel = self.apod
                     }
                 }
 
@@ -135,6 +139,9 @@ struct APODCard: View {
             RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 5)
         }
         .padding(.horizontal, 12)
+        .sheet(item: $selectedModel) { item in
+            ShareSheetView(activityItems: [item.title + "\n" + item.explanation + "\n" + item.url])
+        }
 
     }
 
