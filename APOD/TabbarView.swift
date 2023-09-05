@@ -16,6 +16,17 @@ struct TabbarView: View {
                     Image(systemName: "magnifyingglass")
                 }
                 .tag(0)
+
+            RandomView()
+                .tabItem {
+                    Image(systemName: "infinity")
+                }
+                .tag(1)
+            Text("w")
+                .tabItem {
+                    Image(systemName: "heart")
+                }
+                .tag(2)
         }
     }
 }
