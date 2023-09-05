@@ -80,10 +80,19 @@ struct HomeView: View {
 
 struct HighResolutionImage: View {
     let url: URL?
+
+    @State private var scale: CGFloat = 1.0
     var body: some View {
         WebImage(url: url)
             .resizable()
             .scaledToFit()
+            .scaleEffect(scale)
+            .gesture(
+                MagnificationGesture().onChanged { scale in
+                    self.scale = min(max(scale.magnitude, 0.8), 3.0)
+                    }
+            )
+
 
     }
 }
