@@ -7,10 +7,9 @@
 
 import SwiftUI
 import SDWebImageSwiftUI
-import Combine
 
 struct HomeView: View {
-    @EnvironmentObject var likeManager: LikeManager
+    @EnvironmentObject var apodManager: APODManager
     @State private var showDetail: Bool = false
     @State private var url: URL? = nil
 
@@ -18,14 +17,14 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 16) {
-                    ForEach(likeManager.models, id: \.date) { apod in
+                    ForEach(apodManager.models, id: \.date) { apod in
                         APODCard(apod: apod) {
-                            likeManager.like(apod: apod)
+                            apodManager.like(apod: apod)
                         }
                         .onAppear {
-                            if apod.date == likeManager.models.last!.date, !likeManager.isFilterActive {
+                            if apod.date == apodManager.models.last!.date, !apodManager.isFilterActive {
                                 Task {
-                                    await likeManager.getPhotos()
+                                    await apodManager.getPhotos()
                                 }
                             }
                         }
@@ -35,7 +34,7 @@ struct HomeView: View {
                         }
                     }
 
-                    if !likeManager.isFilterActive {
+                    if !apodManager.isFilterActive {
                         ProgressView()
                             .progressViewStyle(.circular)
                             .frame(height: 120)
@@ -49,22 +48,22 @@ struct HomeView: View {
             .navigationTitle("Home")
             .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        if likeManager.isFilterActive {
+                        if apodManager.isFilterActive {
                         Button("Remove Filters") {
-                            likeManager.reset()
+                            apodManager.reset()
                         }
                     }
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
-                        DatePicker("", selection: $likeManager.date1, in: ...Date(), displayedComponents: .date)
-                        DatePicker("", selection: $likeManager.date2, displayedComponents: .date)
+                        DatePicker("", selection: $apodManager.date1, in: ...Date(), displayedComponents: .date)
+                        DatePicker("", selection: $apodManager.date2, displayedComponents: .date)
                     }
                 }
             }
             .task {
-                await likeManager.getPhotos()
+                await apodManager.getPhotos()
             }
         }
     }

@@ -8,18 +8,18 @@
 import SwiftUI
 struct RandomView: View {
 
-    @EnvironmentObject var likeManager: LikeManager
+    @EnvironmentObject var apodManager: APODManager
 
     @State private var offset: CGFloat = .zero
 
     var body: some View {
         NavigationStack {
             VStack(spacing: .zero) {
-                if !likeManager.isConnected {
+                if !apodManager.isConnected {
                     Text("No internet connection...")
                 } else {
-                    if let apod = likeManager.randomApod {
-                        APODCard(apod: apod) { likeManager.like(apod: apod) }
+                    if let apod = apodManager.randomApod {
+                        APODCard(apod: apod) { apodManager.like(apod: apod) }
                             .overlay {
                                 if offset == .zero {
                                     EmptyView()
@@ -38,10 +38,10 @@ struct RandomView: View {
                                     .onEnded { value in
                                         withAnimation {
                                             if value.translation.width > 150 {
-                                                likeManager.like(apod: apod)
-                                                likeManager.randomApod = nil
+                                                apodManager.like(apod: apod)
+                                                apodManager.randomApod = nil
                                             } else if value.translation.width < -150 {
-                                                likeManager.randomApod = nil
+                                                apodManager.randomApod = nil
                                             }
                                             offset = .zero
                                         }
@@ -54,7 +54,7 @@ struct RandomView: View {
                         ProgressView()
                             .progressViewStyle(.circular)
                             .task {
-                                await likeManager.getImage()
+                                await apodManager.getImage()
                             }
                     }
                 }
