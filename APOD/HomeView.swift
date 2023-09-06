@@ -17,7 +17,9 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 if apodManager.showError {
-                    Text("Error occured 🛩️💥")
+                    Text(apodManager.errorText)
+                        .bold()
+                        .foregroundColor(.red)
                 } else {
                     LazyVStack(spacing: 16) {
                         ForEach(apodManager.models, id: \.date) { apod in
@@ -32,8 +34,10 @@ struct HomeView: View {
                                 }
                             }
                             .onTapGesture {
-                                url = URL(string: apod.hdurl!)!
-                                showDetail = true
+                                if let urlString = apod.hdurl {
+                                    url = URL(string: urlString)!
+                                    showDetail = true
+                                }
                             }
                         }
 
@@ -81,9 +85,9 @@ struct HighResolutionImage: View {
             WebImage(url: url)
                 .resizable()
                 .indicator(.progress)
-                .scaledToFit()
                 .scaleEffect(scale)
-                .frame(height: 230)
+                .scaledToFit()
+                .frame(width: UIScreen.main.bounds.width)
                 .gesture(
                     MagnificationGesture().onChanged { scale in
                         self.scale = min(max(scale.magnitude, 0.8), 3.0)
@@ -98,22 +102,25 @@ struct APODCard: View {
     let completion: () -> ()
 
     @State private var selectedModel: APOD?
-
+    @State private var error: Bool = false
     var body: some View {
         VStack(spacing: .zero) {
             // TODO: Image
             WebImage(url: URL(string: apod.url))
                 .resizable()
-                .placeholder(content: {
+                .onFailure { _ in
+                    error = true
+                }
+                .placeholder {
                     RoundedRectangle(cornerRadius: 8)
                         .foregroundColor(.gray)
                         .overlay {
-                            Text("No Image")
+                            Text(error ? "Image Couldn't load" : "No Image")
                                 .foregroundColor(.white)
+                                .bold()
                         }
-                })
+                }
                 .indicator(.progress)
-
                 .scaledToFill()
                 .frame(height: 220)
                 .clipped()
@@ -154,16 +161,5 @@ struct APODCard: View {
         .sheet(item: $selectedModel) { item in
             ShareSheetView(activityItems: [item.title + "\n" + item.explanation + "\n" + item.url])
         }
-
-    }
-
-
-
-
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView()
     }
 }

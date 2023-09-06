@@ -24,6 +24,7 @@ class APODManager: ObservableObject {
     var networkManager = NetworkManager()
 
     @Published var showError: Bool = false
+    @Published var errorText: String = "Error occured 🛩️💥"
 
     init() {
         upperDate = Date()
@@ -41,7 +42,7 @@ class APODManager: ObservableObject {
         upperDate = Date()
         lowerDate = Calendar.current.date(byAdding: .day, value: -10, to: Date())!
         isFilterActive = false
-
+        showError = false
         Task {
             await getPhotos()
         }
@@ -164,8 +165,9 @@ class APODManager: ObservableObject {
             upperDate = lowerDate
             lowerDate = Calendar.current.date(byAdding: .day, value: -19, to: lowerDate)!
         } catch {
-            showError = true
-            print(error.localizedDescription)
+            if let err = error as? URLError, err.code == .cancelled {
+                showError = true
+            }
         }
     }
 
@@ -180,11 +182,8 @@ class APODManager: ObservableObject {
 
     func bindDates() {
         $date1
-            .dropFirst()
             .combineLatest($date2)
-            .filter { _ in
-                !self.isFilterActive
-            }
+            .dropFirst()
             .sink { val in
                 self.isFilterActive = true
                 self.models = []

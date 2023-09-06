@@ -86,11 +86,3 @@ struct RandomView: View {
 
     }
 }
-
-
-
-struct RandomView_Previews: PreviewProvider {
-    static var previews: some View {
-        RandomView()
-    }
-}
