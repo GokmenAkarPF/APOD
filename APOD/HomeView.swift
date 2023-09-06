@@ -16,34 +16,38 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(apodManager.models, id: \.date) { apod in
-                        APODCard(apod: apod) {
-                            apodManager.like(apod: apod)
-                        }
-                        .onAppear {
-                            if apod.date == apodManager.models.last!.date, !apodManager.isFilterActive {
-                                Task {
-                                    await apodManager.getPhotos()
+                if apodManager.showError {
+                    Text("Error occured 🛩️💥")
+                } else {
+                    LazyVStack(spacing: 16) {
+                        ForEach(apodManager.models, id: \.date) { apod in
+                            APODCard(apod: apod) {
+                                apodManager.like(apod: apod)
+                            }
+                            .onAppear {
+                                if apod.date == apodManager.models.last!.date, !apodManager.isFilterActive {
+                                    Task {
+                                        await apodManager.getPhotos()
+                                    }
                                 }
                             }
+                            .onTapGesture {
+                                url = URL(string: apod.hdurl!)!
+                                showDetail = true
+                            }
                         }
-                        .onTapGesture {
-                            url = URL(string: apod.hdurl!)!
-                            showDetail = true
+
+                        if !apodManager.isFilterActive {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                                .frame(height: 120)
                         }
                     }
 
-                    if !apodManager.isFilterActive {
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .frame(height: 120)
-                    }
+                    NavigationLink("",
+                                   destination: HighResolutionImage(url: url),
+                                   isActive: $showDetail)
                 }
-
-                NavigationLink("",
-                               destination: HighResolutionImage(url: url),
-                               isActive: $showDetail)
             }
             .navigationTitle("Home")
             .toolbar {
@@ -100,7 +104,16 @@ struct APODCard: View {
             // TODO: Image
             WebImage(url: URL(string: apod.url))
                 .resizable()
+                .placeholder(content: {
+                    RoundedRectangle(cornerRadius: 8)
+                        .foregroundColor(.gray)
+                        .overlay {
+                            Text("No Image")
+                                .foregroundColor(.white)
+                        }
+                })
                 .indicator(.progress)
+
                 .scaledToFill()
                 .frame(height: 220)
                 .clipped()

@@ -23,6 +23,8 @@ class APODManager: ObservableObject {
     var cancellable = Set<AnyCancellable>()
     var networkManager = NetworkManager()
 
+    @Published var showError: Bool = false
+
     init() {
         upperDate = Date()
         lowerDate = Calendar.current.date(byAdding: .day, value: -10, to: Date())!
@@ -56,6 +58,7 @@ class APODManager: ObservableObject {
                     return _apod
                 }
             } catch {
+                showError = true
                 print(error.localizedDescription)
             }
         }
@@ -91,6 +94,7 @@ class APODManager: ObservableObject {
             }
         } catch {
             print(error.localizedDescription)
+            showError = true
         }
     }
 
@@ -160,6 +164,7 @@ class APODManager: ObservableObject {
             upperDate = lowerDate
             lowerDate = Calendar.current.date(byAdding: .day, value: -19, to: lowerDate)!
         } catch {
+            showError = true
             print(error.localizedDescription)
         }
     }
