@@ -20,9 +20,7 @@ struct FavoritesView: View {
                     ScrollView {
                         LazyVStack {
                             ForEach(apodManager.likedModels, id: \.date) { apod in
-                                APODCard(apod: apod) {
-                                    apodManager.unliked(apod: apod)
-                                }
+                                APODCard(apod: apod) { apodManager.unliked(apod: apod) }
                             }
                         }
                     }

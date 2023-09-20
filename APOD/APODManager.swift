@@ -147,6 +147,7 @@ class APODManager: ObservableObject {
             let (data, _) = try await URLSession.shared.data(from: URL(string: "https://api.nasa.gov/planetary/apod?api_key=WBd6KIwrJohInTFEi1XSZA7ERws6opS3KLm2XhSH&start_date=\(lowerBoundString)&end_date=\(upperBoundString)")!)
             var modelss = try JSONDecoder().decode([APOD].self, from: data)
 
+            // MARK: Store response
             if let likedData = UserDefaults.standard.data(forKey: "likes") {
                 let likedModels = try JSONDecoder().decode([APOD].self, from: likedData)
 

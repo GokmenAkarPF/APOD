@@ -84,7 +84,7 @@ struct HighResolutionImage: View {
     var body: some View {
             WebImage(url: url)
                 .resizable()
-                .indicator(.progress)
+                .indicator(.progress(style: .bar))
                 .scaleEffect(scale)
                 .scaledToFit()
                 .frame(width: UIScreen.main.bounds.width)
